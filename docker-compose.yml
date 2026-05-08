@@ -1,0 +1,56 @@
+services:
+  db:
+    image: postgres:16
+    env_file:
+      - .env
+    container_name: teamfinder_db
+    ports:
+      - "1122:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    restart: always
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $$POSTGRES_USER -d $$POSTGRES_DB"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  server:
+    build: .
+    container_name: teamfinder_server
+    env_file:
+      - .env
+    depends_on:
+      db:
+        condition: service_healthy
+    ports:
+      - "8000:8000"
+    volumes:
+      - media_data:/app/media
+    restart: always
+    command: ["/app/start.sh"]
+
+  seed:
+    build: .
+    container_name: teamfinder_seed
+    env_file:
+      - .env
+    depends_on:
+      db:
+        condition: service_healthy
+    volumes:
+      - media_data:/app/media
+    command: >
+      sh -c "
+      while ! python manage.py migrate --check > /dev/null 2>&1; do
+        echo 'loading migrations' && sleep 3;
+      done &&
+      python manage.py seed_users_data &&
+      python manage.py seed_projects_data
+      "
+    profiles:
+      - seed
+
+volumes:
+  postgres_data:
+  media_data:

@@ -1,0 +1,10 @@
+PAGINATE_BY = 12
+
+ERROR_STATUS = "error"
+OK_STATUS = "ok"
+
+METHOD_NOT_ALLOWED_MESSAGE = "Метод не поддерживается"
+ACCESS_DENIED_MESSAGE = "Нет доступа"
+PROJECT_ALREADY_CLOSED_MESSAGE = "Проект уже закрыт"
+
+SKILL_SEARCH_LIMIT = 10
