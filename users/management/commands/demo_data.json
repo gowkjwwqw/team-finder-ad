@@ -1,0 +1,57 @@
+{
+  "users": [
+    {
+      "email": "user1@example.com",
+      "password": "testtest123",
+      "name": "User 1",
+      "surname": "User 1",
+      "phone": "+79001000001",
+      "github_url": "https://github.com/user1",
+      "about": "Test"
+    },
+    {
+      "email": "user2@example.com",
+      "password": "testtest123",
+      "name": "User 2",
+      "surname": "User 2",
+      "phone": "+79001000002",
+      "github_url": "https://github.com/user2",
+      "about": "Test"
+    },
+    {
+      "email": "user3@example.com",
+      "password": "testtest123",
+      "name": "User 3",
+      "surname": "User 3",
+      "phone": "+79001000003",
+      "github_url": "https://github.com/user3",
+      "about": "Test"
+    }
+  ],
+  "projects": [
+    {
+      "owner_email": "user1@example.com",
+      "name": "Test 1",
+      "description": "Test",
+      "github_url": "https://github.com/user1/test1",
+      "status": "open",
+      "participants": ["user2@example.com"]
+    },
+    {
+      "owner_email": "user2@example.com",
+      "name": "Test 2",
+      "description": "Test",
+      "github_url": "https://github.com/user2/test2",
+      "status": "open",
+      "participants": ["user1@example.com", "user3@example.com"]
+    },
+    {
+      "owner_email": "user3@example.com",
+      "name": "Test 3",
+      "description": "Test",
+      "github_url": "https://github.com/user3/test3",
+      "status": "open",
+      "participants": ["user1@example.com"]
+    }
+  ]
+}

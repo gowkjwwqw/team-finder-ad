@@ -1,11 +1,12 @@
 from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin
+from django.db.models import Count
 
 from .models import User
 
 
 @admin.register(User)
-class CustomUserAdmin(UserAdmin):
+class UserAdmin(UserAdmin):
     model = User
 
     list_display = (
@@ -15,6 +16,7 @@ class CustomUserAdmin(UserAdmin):
         "is_staff",
         "is_active",
         "date_joined",
+        "projects_count",
     )
     list_filter = (
         "is_staff",
@@ -95,3 +97,11 @@ class CustomUserAdmin(UserAdmin):
             },
         ),
     )
+
+    @admin.display(description="Проектов")
+    def projects_count(self, obj):
+        return obj.projects_count
+
+    def get_queryset(self, request):
+        qs = super().get_queryset(request)
+        return qs.annotate(projects_count=Count("participated_projects", distinct=True))
