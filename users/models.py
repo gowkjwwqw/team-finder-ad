@@ -54,6 +54,7 @@ class User(AbstractUser):
     class Meta:
         ordering = ["-date_joined"]
         verbose_name = "Пользователь"
+        verbose_name_plural = "Пользователи"
 
     def __str__(self):
         return f"{self.name} {self.surname}".strip() or self.email

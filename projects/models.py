@@ -2,6 +2,10 @@ from django.conf import settings
 from django.db import models
 from django.urls import reverse
 
+from .constants import (
+    SKILL_MAX_LENGTH,
+)
+
 
 class ProjectStatus(models.TextChoices):
     OPEN = "open", "Открыт"
@@ -9,9 +13,11 @@ class ProjectStatus(models.TextChoices):
 
 
 class Skill(models.Model):
-    name = models.CharField("название", max_length=100, unique=True)
+    name = models.CharField("название", max_length=SKILL_MAX_LENGTH, unique=True)
 
     class Meta:
+        verbose_name_plural = "Навыки"
+        verbose_name = "Навык"
         ordering = ["name"]
 
     def __str__(self):
@@ -61,6 +67,8 @@ class Project(models.Model):
     )
 
     class Meta:
+        verbose_name = "Проект"
+        verbose_name_plural = "Проекты"
         ordering = ["-created_at"]
 
     def __str__(self):

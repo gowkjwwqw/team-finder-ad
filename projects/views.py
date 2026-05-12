@@ -1,5 +1,5 @@
-from http import HTTPStatus
 import json
+from http import HTTPStatus
 
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin

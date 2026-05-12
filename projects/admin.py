@@ -11,6 +11,8 @@ class ProjectAdmin(admin.ModelAdmin):
         "owner",
         "status",
         "created_at",
+        "participants_count",
+        "skills_list",
     )
     list_filter = (
         "status",
@@ -26,6 +28,14 @@ class ProjectAdmin(admin.ModelAdmin):
     filter_horizontal = (
         "participants",
     )
+
+    def participants_count(self, obj):
+        return obj.participants.count()
+    participants_count.short_description = "Участники"
+
+    def skills_list(self, obj):
+        return ", ".join(obj.skills.values_list("name", flat=True))
+    skills_list.short_description = "Скиллы"
 
 
 @admin.register(Skill)
