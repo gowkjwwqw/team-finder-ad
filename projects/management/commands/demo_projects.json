@@ -1,0 +1,32 @@
+[
+  {
+    "owner_email": "user1@example.com",
+    "name": "Test 1",
+    "description": "Test",
+    "github_url": "https://github.com/user1/test1",
+    "status": "open",
+    "participant_emails": [
+      "user2@example.com"
+    ]
+  },
+  {
+    "owner_email": "user2@example.com",
+    "name": "Test 2",
+    "description": "Test",
+    "github_url": "https://github.com/user2/test2",
+    "status": "open",
+    "participant_emails": [
+      "user1@example.com"
+    ]
+  },
+  {
+    "owner_email": "user3@example.com",
+    "name": "Test 3",
+    "description": "Test",
+    "github_url": "https://github.com/user3/test3",
+    "status": "open",
+    "participant_emails": [
+      "user1@example.com"
+    ]
+  }
+]

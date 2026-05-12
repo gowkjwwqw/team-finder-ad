@@ -23,9 +23,6 @@ class ProjectAdmin(admin.ModelAdmin):
         "owner__name",
         "owner__surname",
     )
-    ordering = (
-        "-created_at",
-    )
     filter_horizontal = (
         "participants",
     )

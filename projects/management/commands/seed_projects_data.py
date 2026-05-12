@@ -1,41 +1,15 @@
+import json
+import os
+
 from django.core.management.base import BaseCommand, CommandError
 from django.db import transaction
 
 from projects.models import Project
 from users.models import User
 
-DEMO_PROJECTS = [
-    {
-        "owner_email": "user1@example.com",
-        "name": "Test 1",
-        "description": "Test",
-        "github_url": "https://github.com/user1/test1",
-        "status": "open",
-        "participant_emails": [
-            "user2@example.com",
-        ],
-    },
-    {
-        "owner_email": "user2@example.com",
-        "name": "Test 2",
-        "description": "Test",
-        "github_url": "https://github.com/user2/test2",
-        "status": "open",
-        "participant_emails": [
-            "user1@example.com",
-        ],
-    },
-    {
-        "owner_email": "user3@example.com",
-        "name": "Test 3",
-        "description": "Test",
-        "github_url": "https://github.com/user3/test3",
-        "status": "open",
-        "participant_emails": [
-            "user1@example.com",
-        ],
-    }
-]
+DEFAULT_FIXTURE = os.path.join(
+    os.path.dirname(__file__), "demo_projects.json"
+)
 
 
 class Command(BaseCommand):
@@ -45,17 +19,32 @@ class Command(BaseCommand):
             action="store_true",
             help="Не удалять старые проекты",
         )
+        parser.add_argument(
+            "--fixture",
+            default=DEFAULT_FIXTURE,
+            help="Путь к JSON-файлу с данными проектов",
+        )
 
     @transaction.atomic
     def handle(self, *args, **options):
+        fixture_path = options["fixture"]
+
+        if not os.path.exists(fixture_path):
+            raise CommandError(f"Файл не найден: {fixture_path}")
+
+        with open(fixture_path, encoding="utf-8") as f:
+            demo_projects = json.load(f)
+
         users_by_email = {
             user.email: user
             for user in User.objects.filter(
-                email__in=self._all_emails_from_config()
+                email__in=self._all_emails_from_config(demo_projects)
             )
         }
 
-        missing_emails = self._all_emails_from_config() - set(users_by_email.keys())
+        missing_emails = (
+            self._all_emails_from_config(demo_projects) - set(users_by_email.keys())
+        )
         if missing_emails:
             raise CommandError(
                 "Не найдены пользователи для проектов: "
@@ -64,7 +53,7 @@ class Command(BaseCommand):
 
         self.stdout.write(self.style.WARNING("Создание проектов"))
 
-        for item in DEMO_PROJECTS:
+        for item in demo_projects:
             owner = users_by_email[item["owner_email"]]
 
             project, created = Project.objects.get_or_create(
@@ -97,11 +86,9 @@ class Command(BaseCommand):
 
         self.stdout.write(self.style.SUCCESS("Проекты успешно созданы."))
 
-    def _all_emails_from_config(self):
+    def _all_emails_from_config(self, demo_projects):
         emails = set()
-
-        for item in DEMO_PROJECTS:
+        for item in demo_projects:
             emails.add(item["owner_email"])
             emails.update(item["participant_emails"])
-
         return emails
