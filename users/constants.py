@@ -1,3 +1,22 @@
+from pathlib import Path
+
+BASE_DIR = Path(__file__).resolve().parent.parent
+
+AVATAR_FONT_PATH = BASE_DIR / "assets" / "fonts" / "DejaVuSans-Bold.ttf"
+AVATAR_SIZE = (200, 200)
+DEFAULT_AVATAR_LETTER = "U"
+AVATAR_FONT_SIZE = 100
+AVATAR_TEXT_Y_OFFSET = 10
+DEFAULT_AVATAR_FILENAME_TEMPLATE = "default_avatar_{email}.png"
+AVATAR_BACKGROUND_COLORS = (
+    "#A98C7A",
+    "#7B8FA1",
+    "#8F7A66",
+    "#6A8E7F",
+    "#9A7AB0",
+)
+
+
 PAGINATE_BY = 12
 
 OWNERS_OF_FAVORITE_PROJECTS = "owners-of-favorite-projects"

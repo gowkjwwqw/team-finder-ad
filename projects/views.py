@@ -22,6 +22,26 @@ from .constants import (
 )
 
 
+def _require_post(request):
+    """Возвращает JsonResponse с ошибкой, если метод не POST, иначе None."""
+    if request.method != "POST":
+        return JsonResponse(
+            {"status": ERROR_STATUS, "message": METHOD_NOT_ALLOWED_MESSAGE},
+            status=HTTPStatus.METHOD_NOT_ALLOWED,
+        )
+    return None
+
+
+def _require_owner(project, user):
+    """Возвращает JsonResponse с ошибкой, если user не владелец проекта, иначе None."""
+    if project.owner != user:
+        return JsonResponse(
+            {"status": ERROR_STATUS, "message": ACCESS_DENIED_MESSAGE},
+            status=HTTPStatus.FORBIDDEN,
+        )
+    return None
+
+
 class ProjectListView(ListView):
     model = Project
     template_name = "projects/project_list.html"
@@ -81,19 +101,15 @@ class ProjectUpdateView(LoginRequiredMixin, OwnerRequiredMixin, UpdateView):
 
 @login_required
 def complete_project(request, pk):
-    if request.method != "POST":
-        return JsonResponse(
-            {"status": ERROR_STATUS, "message": METHOD_NOT_ALLOWED_MESSAGE},
-            status=HTTPStatus.METHOD_NOT_ALLOWED,
-        )
+    error = _require_post(request)
+    if error:
+        return error
 
     project = get_object_or_404(Project, pk=pk)
 
-    if project.owner != request.user:
-        return JsonResponse(
-            {"status": ERROR_STATUS, "message": ACCESS_DENIED_MESSAGE},
-            status=HTTPStatus.FORBIDDEN,
-        )
+    error = _require_owner(project, request.user)
+    if error:
+        return error
 
     if project.status != ProjectStatus.OPEN:
         return JsonResponse(
@@ -112,11 +128,9 @@ def complete_project(request, pk):
 
 @login_required
 def toggle_participate(request, pk):
-    if request.method != "POST":
-        return JsonResponse(
-            {"status": ERROR_STATUS, "message": METHOD_NOT_ALLOWED_MESSAGE},
-            status=HTTPStatus.METHOD_NOT_ALLOWED,
-        )
+    error = _require_post(request)
+    if error:
+        return error
 
     project = get_object_or_404(Project, pk=pk)
 
@@ -143,19 +157,15 @@ def skill_search(request):
 
 @login_required
 def skill_add(request, pk):
-    if request.method != "POST":
-        return JsonResponse(
-            {"status": ERROR_STATUS, "message": METHOD_NOT_ALLOWED_MESSAGE},
-            status=HTTPStatus.METHOD_NOT_ALLOWED,
-        )
+    error = _require_post(request)
+    if error:
+        return error
 
     project = get_object_or_404(Project, pk=pk)
 
-    if project.owner != request.user:
-        return JsonResponse(
-            {"status": ERROR_STATUS, "message": ACCESS_DENIED_MESSAGE},
-            status=HTTPStatus.FORBIDDEN,
-        )
+    error = _require_owner(project, request.user)
+    if error:
+        return error
 
     try:
         body = json.loads(request.body)
@@ -184,19 +194,15 @@ def skill_add(request, pk):
 
 @login_required
 def skill_remove(request, pk, skill_id):
-    if request.method != "POST":
-        return JsonResponse(
-            {"status": ERROR_STATUS, "message": METHOD_NOT_ALLOWED_MESSAGE},
-            status=HTTPStatus.METHOD_NOT_ALLOWED,
-        )
+    error = _require_post(request)
+    if error:
+        return error
 
     project = get_object_or_404(Project, pk=pk)
 
-    if project.owner != request.user:
-        return JsonResponse(
-            {"status": ERROR_STATUS, "message": ACCESS_DENIED_MESSAGE},
-            status=HTTPStatus.FORBIDDEN,
-        )
+    error = _require_owner(project, request.user)
+    if error:
+        return error
 
     skill = get_object_or_404(Skill, pk=skill_id)
     project.skills.remove(skill)

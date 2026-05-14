@@ -19,6 +19,7 @@
 ## Стек технологий
 
 - Python 3.12
+- Pillow
 - Django 5.2
 - PostgreSQL 16
 - Docker Compose

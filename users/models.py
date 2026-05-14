@@ -3,8 +3,9 @@ from django.core.files.base import ContentFile
 from django.db import models
 
 from .managers import UserManager
-from .utils import get_default_avatar
+from .utils import generate_avatar
 from .constants import (
+    DEFAULT_AVATAR_FILENAME_TEMPLATE,
     USER_NAME_MAX_LENGTH,
     USER_PHONE_MAX_LENGTH,
     USER_ABOUT_MAX_LENGTH,
@@ -61,11 +62,9 @@ class User(AbstractUser):
 
     def save(self, *args, **kwargs):
         if not self.avatar:
-            avatar_bytes = get_default_avatar()
-            if avatar_bytes:
-                self.avatar.save(
-                    "default-avatar.png",
-                    ContentFile(avatar_bytes),
-                    save=False,
-                )
+            self.avatar.save(
+                DEFAULT_AVATAR_FILENAME_TEMPLATE.format(email=self.email),
+                ContentFile(generate_avatar(self.name)),
+                save=False,
+            )
         super().save(*args, **kwargs)
