@@ -2,8 +2,9 @@ from django import forms
 from django.contrib.auth import authenticate
 from django.contrib.auth.forms import PasswordChangeForm
 
+from core.mixins import GithubUrlCleanMixin
 from .models import User
-from .validators import validate_github_url_domain, validate_phone_format
+from .validators import validate_phone_format
 
 
 class UserRegistrationForm(forms.ModelForm):
@@ -71,7 +72,9 @@ class UserPasswordChangeForm(PasswordChangeForm):
     pass
 
 
-class UserProfileForm(forms.ModelForm):
+class UserProfileForm(GithubUrlCleanMixin, forms.ModelForm):
+    github_url_model = User
+
     class Meta:
         model = User
         fields = (
@@ -110,21 +113,3 @@ class UserProfileForm(forms.ModelForm):
             raise forms.ValidationError("Номер телефона уже зарегистрирован.")
 
         return normalized_phone
-
-    def clean_github_url(self):
-        github_url = (self.cleaned_data.get("github_url") or "").strip()
-        if github_url:
-            validate_github_url_domain(github_url)
-
-        normalized_url = github_url.rstrip("/")
-
-        uf = User.objects.filter(github_url=normalized_url)
-        if self.instance.pk:
-            uf = uf.exclude(pk=self.instance.pk)
-
-        if uf.exists():
-            raise forms.ValidationError(
-                "Профиль пользователя с данной ссылкой на профиль GitHub уже существует."
-            )
-
-        return normalized_url

@@ -3,6 +3,8 @@ from django.db import models
 from django.urls import reverse
 
 from .constants import (
+    PROJECT_NAME_LENGTH,
+    PROJECT_STATUS_LENGTH,
     SKILL_MAX_LENGTH,
 )
 
@@ -33,7 +35,7 @@ class Project(models.Model):
     )
     name = models.CharField(
         "название",
-        max_length=200,
+        max_length=PROJECT_NAME_LENGTH,
     )
     description = models.TextField(
         "описание",
@@ -45,7 +47,7 @@ class Project(models.Model):
     )
     status = models.CharField(
         "статус",
-        max_length=6,
+        max_length=PROJECT_STATUS_LENGTH,
         choices=ProjectStatus.choices,
         default=ProjectStatus.OPEN,
     )

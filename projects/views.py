@@ -9,6 +9,7 @@ from django.views.generic import CreateView, DetailView, ListView, UpdateView
 
 from .forms import ProjectForm
 from .mixins import OwnerRequiredMixin
+from .utils import get_project_queryset
 from .models import Project, ProjectStatus, Skill
 from .constants import (
     PAGINATE_BY,
@@ -28,11 +29,7 @@ class ProjectListView(ListView):
     paginate_by = PAGINATE_BY
 
     def get_queryset(self):
-        qs = (
-            Project.objects.select_related("owner")
-            .prefetch_related("participants", "skills")
-            .order_by("-created_at")
-        )
+        qs = get_project_queryset().order_by("-created_at")
         skill = self.request.GET.get("skill")
         if skill:
             qs = qs.filter(skills__name=skill)
@@ -51,7 +48,7 @@ class ProjectDetailView(DetailView):
     context_object_name = "project"
 
     def get_queryset(self):
-        return Project.objects.select_related("owner").prefetch_related("participants", "skills")
+        return get_project_queryset()
 
 
 class ProjectCreateView(LoginRequiredMixin, CreateView):
@@ -75,7 +72,6 @@ class ProjectUpdateView(LoginRequiredMixin, OwnerRequiredMixin, UpdateView):
     model = Project
     form_class = ProjectForm
     template_name = "projects/create-project.html"
-    context_object_name = "project"
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -124,25 +120,24 @@ def toggle_participate(request, pk):
 
     project = get_object_or_404(Project, pk=pk)
 
-    if project.participants.filter(pk=request.user.pk).exists():
+    is_participant = project.participants.filter(pk=request.user.pk).exists()
+    if is_participant:
         project.participants.remove(request.user)
-        participant = False
     else:
         project.participants.add(request.user)
-        participant = True
 
     return JsonResponse(
-        {"status": OK_STATUS, "participant": participant},
+        {"status": OK_STATUS, "participant": not is_participant},
         status=HTTPStatus.OK,
     )
 
 
 @login_required
 def skill_search(request):
-    q = request.GET.get("q", "").strip()
-    if not q:
+    search_query = request.GET.get("q", "").strip()
+    if not search_query:
         return JsonResponse([], safe=False)
-    skills = Skill.objects.filter(name__icontains=q)[:SKILL_SEARCH_LIMIT]
+    skills = Skill.objects.filter(name__icontains=search_query)[:SKILL_SEARCH_LIMIT]
     return JsonResponse([{"id": s.id, "name": s.name} for s in skills], safe=False)
 
 
