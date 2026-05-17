@@ -10,6 +10,8 @@ from .constants import (
     DEFAULT_AVATAR_LETTER,
     AVATAR_FONT_SIZE,
     AVATAR_TEXT_Y_OFFSET,
+    AVATAR_TEXT_ANCHOR,
+    AVATAR_TEXT_COLOR,
 )
 
 
@@ -17,7 +19,7 @@ def get_avatar_font(size):
     try:
         return ImageFont.truetype(str(AVATAR_FONT_PATH), size)
     except OSError:
-        return ImageFont.load_default()
+        return ImageFont.load_default(size=size)
 
 
 def generate_avatar(name):
@@ -27,14 +29,14 @@ def generate_avatar(name):
     letter = (name[:1] or DEFAULT_AVATAR_LETTER).upper()
     font = get_avatar_font(AVATAR_FONT_SIZE)
 
-    bbox = draw.textbbox((0, 0), letter, font=font)
+    bbox = draw.textbbox((0, 0), letter, font=font, anchor=AVATAR_TEXT_ANCHOR)
     t_width = bbox[2] - bbox[0]
     t_height = bbox[3] - bbox[1]
 
     x = (AVATAR_SIZE[0] - t_width) / 2
     y = (AVATAR_SIZE[1] - t_height) / 2 - AVATAR_TEXT_Y_OFFSET
 
-    draw.text((x, y), letter, fill="white", font=font)
+    draw.text((x, y), letter, fill=AVATAR_TEXT_COLOR, font=font)
 
     buffer = io.BytesIO()
     image.save(buffer, format="PNG")

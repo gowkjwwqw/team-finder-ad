@@ -1,3 +1,4 @@
+from enum import Enum
 from pathlib import Path
 
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -8,13 +9,19 @@ DEFAULT_AVATAR_LETTER = "U"
 AVATAR_FONT_SIZE = 100
 AVATAR_TEXT_Y_OFFSET = 10
 DEFAULT_AVATAR_FILENAME_TEMPLATE = "default_avatar_{email}.png"
-AVATAR_BACKGROUND_COLORS = (
-    "#A98C7A",
-    "#7B8FA1",
-    "#8F7A66",
-    "#6A8E7F",
-    "#9A7AB0",
-)
+AVATAR_TEXT_ANCHOR = "mm"
+AVATAR_TEXT_COLOR = "white"
+
+
+class AvatarColor(str, Enum):
+    WARM_BROWN = "#A98C7A"
+    STEEL_BLUE = "#7B8FA1"
+    EARTH_BROWN = "#8F7A66"
+    SAGE_GREEN = "#6A8E7F"
+    SOFT_PURPLE = "#9A7AB0"
+
+
+AVATAR_BACKGROUND_COLORS = tuple(AvatarColor)
 
 
 PAGINATE_BY = 12

@@ -29,13 +29,13 @@ class ProjectAdmin(admin.ModelAdmin):
         "participants",
     )
 
+    @admin.display(description="Участники")
     def participants_count(self, obj):
         return obj.participants.count()
-    participants_count.short_description = "Участники"
 
+    @admin.display(description="Скиллы")
     def skills_list(self, obj):
         return ", ".join(obj.skills.values_list("name", flat=True))
-    skills_list.short_description = "Скиллы"
 
 
 @admin.register(Skill)

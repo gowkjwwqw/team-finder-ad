@@ -2,8 +2,6 @@ from pathlib import Path
 
 from decouple import config
 
-from django.urls import reverse_lazy
-
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 SECRET_KEY = config("DJANGO_SECRET_KEY")
@@ -103,4 +101,4 @@ DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
 AUTH_USER_MODEL = "users.User"
 
-LOGIN_URL = reverse_lazy('users:login')
+LOGIN_URL = "users:login"
